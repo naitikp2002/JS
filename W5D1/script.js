@@ -1,33 +1,33 @@
-'use strict';
+"use strict";
 
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
+const btn = document.querySelector(".btn-country");
+const countriesContainer = document.querySelector(".countries");
 
 ///////////////////////////////////////
 function renderCountry(data, className) {
   const html = `<article class="country ${className}">
-    <img class="country__img" src="${data.flags['png']}" />
+    <img class="country__img" src="${data.flags["png"]}" />
     <div class="country__data">
       <h3 class="country__name">${data.name?.common}</h3>
       <h4 class="country__region">${data.region}</h4>
       <p class="country__row"><span>👫</span>${(
         data.population / 1000000
       ).toFixed(1)} people</p>
-      <p class="country__row"><span>🗣️</span>${data.languages['eng']}</p>
-      <p class="country__row"><span>💰</span>${data.currencies['INR']?.name}</p>
+      <p class="country__row"><span>🗣️</span>${data.languages["eng"]}</p>
+      <p class="country__row"><span>💰</span>${data.currencies["INR"]?.name}</p>
     </div>
   </article>`;
-  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.insertAdjacentHTML("beforeend", html);
   countriesContainer.style.opacity = 1;
 }
 
 const getCountryAndNeighbour = function (country) {
   // AJAX call country 1
   const request = new XMLHttpRequest();
-  request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
+  request.open("GET", `https://restcountries.com/v3.1/name/${country}`);
   request.send();
 
-  request.addEventListener('load', function () {
+  request.addEventListener("load", function () {
     const [data] = JSON.parse(this.responseText);
     console.log(data);
 
@@ -41,45 +41,45 @@ const getCountryAndNeighbour = function (country) {
 
     // AJAX call country 2
     const request2 = new XMLHttpRequest();
-    request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
+    request2.open("GET", `https://restcountries.com/v3.1/alpha/${neighbour}`);
     request2.send();
 
-    request2.addEventListener('load', function () {
+    request2.addEventListener("load", function () {
       const data2 = JSON.parse(this.responseText);
       console.log(data2);
 
-      renderCountry(data2[0], 'neighbour');
+      renderCountry(data2[0], "neighbour");
     });
   });
 };
 
 function renderError(errMsgs) {
-  countriesContainer.insertAdjacentText('beforeend', `${errMsgs}`);
+  countriesContainer.insertAdjacentText("beforeend", `${errMsgs}`);
   countriesContainer.style.opacity = 1;
 }
 
 function getCountryData(name) {
   const request = fetch(`https://restcountries.com/v3.1/name/${name}`)
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
-        throw new Error('Country Not Found');
+        throw new Error("Country Not Found");
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       console.log(data);
       renderCountry(data[0]);
       const neighbour = data[0]?.borders[0];
       if (!neighbour) {
-        throw new Error('Neighbour Country Not Found');
+        throw new Error("Neighbour Country Not Found");
       }
       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
     })
-    .then(response => {
+    .then((response) => {
       return response.json();
     })
-    .then(data => renderCountry(data[0], 'neighbour'))
-    .catch(err => renderError(err.message))
+    .then((data) => renderCountry(data[0], "neighbour"))
+    .catch((err) => renderError(err.message))
     .finally(() => {
       countriesContainer.style.opacity = 1;
     });
@@ -96,7 +96,19 @@ function getCountryData(name) {
 // getCountryData('use');
 // getCountryData('bharat');
 
-btn.addEventListener('click', function () {
+btn.addEventListener("click", function () {
   // getCountryAndNeighbour('bharat');
-  getCountryData('australia');
+  getCountryData("australia");
 });
+
+const lotteryPromise = new Promise(function (resolve, reject) {
+  if (Math.random() >= 0.5) {
+    resolve("you WIN");
+  } else {
+    reject("you lose");
+  }
+});
+
+lotteryPromise.then((res) => console.log(res));
+
+// Coding Challenge #26

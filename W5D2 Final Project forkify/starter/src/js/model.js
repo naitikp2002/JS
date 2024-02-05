@@ -1,7 +1,10 @@
 // import { async } from 'regenerator-runtime';
 import { API_URL } from './config';
 import { getJSON } from './helper';
-export const state = { recipe: {}, search: { query: '', results: [] } };
+export const state = {
+  recipe: {},
+  search: { query: '', results: [], page: 1, resultsPerPage: 10 },
+};
 
 export const loadRecipe = async function (id) {
   try {
@@ -26,9 +29,10 @@ export const loadRecipe = async function (id) {
 
 export const loadSearchResults = async function (query) {
   try {
+    state.search.query = query;
     const data = await getJSON(`${API_URL}?search=${query}`);
-    console.log(data);
-    data.data.recipe.map(rec => {
+    // console.log(data);
+    state.search.results = data.data.recipes.map(rec => {
       return {
         id: rec.id,
         title: rec.title,
@@ -36,10 +40,20 @@ export const loadSearchResults = async function (query) {
         image: rec.image_url,
       };
     });
+    // console.log(state.search.results);
   } catch (err) {
-    console.err(err);
+    console.log(err);
     throw err;
   }
 };
 
-loadSearchResults('pizza');
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+  // console.log(start, end);
+  // console.log(page);
+
+  return state.search.results.slice(start, end);
+};
+// loadSearchResults('pizza');

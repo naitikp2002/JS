@@ -4,17 +4,16 @@ import icons from 'url:../img/icons.svg';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import recipeView from './views/recipeView.js';
-console.log(icons);
-const recipeContainer = document.querySelector('.recipe');
+import searchView from './views/searchView.js';
+import resultView from './views/resultView.js';
 
-// https://forkify-api.herokuapp.com/v2
-
-///////////////////////////////////////
-
+if (module.hot) {
+  module.hot.accept();
+}
 const controlRecipe = async function () {
   try {
     const id = window.location.hash.slice(1);
-    console.log(id);
+    // console.log(id);
     if (!id) return;
     recipeView.renderSpinner();
     await model.loadRecipe(id);
@@ -27,9 +26,26 @@ const controlRecipe = async function () {
     recipeView.errorRender();
   }
 };
-
 // controlRecipe();
+
+const controlSearchResults = async function () {
+  try {
+    resultView.renderSpinner();
+    const query = searchView.getQuery();
+    if (!query) return;
+    await model.loadSearchResults(query);
+    // await model.loadSearchResults('garlic');
+    console.log(model.state.search.results);
+    // resultView.render(model.state.search.results);
+    resultView.render(model.getSearchResultsPage());
+    // console.log(model.getSearchResultsPage(1));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipe);
+  searchView.addHandlerSearch(controlSearchResults);
 };
 init();
